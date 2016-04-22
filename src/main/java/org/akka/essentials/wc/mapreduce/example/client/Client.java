@@ -7,13 +7,13 @@ import com.typesafe.config.*;
 
 public class Client implements Bootable {
 	public Client() {
-		final String fileName = "Othello.txt";
+		final String fileName = "mypcap.pcap";
 
 		ActorSystem system = ActorSystem.create("ClientApplication",
 				ConfigFactory.load().getConfig("MapReduceClientApp"));
 
 		final ActorRef fileReadActor = system.actorOf(Props.create(
-				FileReadActor.class));
+				PcapReadActor.class));
 
 		String remotePath = "akka.tcp://MapReduceApp@127.0.0.1:2552/user/masterActor";
 		ActorRef clientActor = system.actorOf(Props.create(ClientActor.class, remotePath));

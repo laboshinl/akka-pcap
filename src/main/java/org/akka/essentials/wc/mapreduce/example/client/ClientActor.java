@@ -11,7 +11,8 @@ public class ClientActor extends UntypedActor {
 	final LoggingAdapter logger = Logging.getLogger(getContext().system(), this);
 
 	private ActorRef remoteServer = null;
-	private final List<String> dataBuffer = new ArrayList<String>();
+	//private final List<String> dataBuffer = new ArrayList<String>();
+	private final List<byte[]> dataBuffer = new ArrayList<byte[]>();
 	private TaskInfo infoBuffer = null;
 	@SuppressWarnings("unused")
 	private ActorRef fileReadActor = null;
@@ -35,7 +36,7 @@ public class ClientActor extends UntypedActor {
 
 			// flush the buffers
 			for (int i = dataBuffer.size() - 1; i >= 0; i--) {
-				logger.info("sending to remote server");
+				//logger.info("sending to remote server");
 				remoteServer.tell(dataBuffer.remove(i), getSelf());
 			}
 			if (infoBuffer != null) {
@@ -51,8 +52,8 @@ public class ClientActor extends UntypedActor {
 				infoBuffer = (TaskInfo) message;
 
 			} else {
-				logger.info("data buffering");
-				dataBuffer.add((String) message);
+				//logger.info("data buffering");
+				dataBuffer.add((byte[]) message);
 			}
 		} else
 		if (message instanceof TaskInfo) {
@@ -65,7 +66,7 @@ public class ClientActor extends UntypedActor {
 			getContext().system().shutdown();
 
 		} else {
-			logger.info("sending to remote server");
+			//logger.info("sending to remote server");
 			remoteServer.tell(message, getSelf());
 		}
 	}

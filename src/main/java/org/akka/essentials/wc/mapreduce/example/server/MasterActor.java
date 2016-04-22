@@ -22,7 +22,7 @@ public class MasterActor extends UntypedActor {
 			remoteActor = getSender();
 		}
 
-		logger.info("MasterActor -> onReceive(" + message + ")");
+		//logger.info("MasterActor -> onReceive(" + message + ")");
 		if (message instanceof TaskInfo) {
 			aggregateActor.tell(message, getSelf());
 
@@ -30,7 +30,7 @@ public class MasterActor extends UntypedActor {
 			remoteActor.tell(new ShutdownInfo(), getSelf());
 
 		} else
-		if (message instanceof String) {
+		if (message instanceof byte[]) {
 			mapActor.tell(message, getSelf());
 		}
 	}

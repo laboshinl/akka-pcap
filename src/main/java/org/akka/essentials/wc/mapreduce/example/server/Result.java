@@ -6,6 +6,7 @@ public class Result implements Serializable{
 	private static final long serialVersionUID = 5727560172917790458L;
 	private String word;
 	private int no_of_instances;
+	private byte[] data;
 
 	public Result(String word, int no_of_instances){
 		this.setWord(word);
@@ -19,6 +20,15 @@ public class Result implements Serializable{
 	public String getWord() {
 		return word;
 	}
+	
+	public void setData(byte[] data) {
+		this.data = data;
+	}
+
+	public byte[] getData() {
+		return data;
+	}
+
 
 	public void setNoOfInstances(int no_of_instances) {
 		this.no_of_instances = no_of_instances;
