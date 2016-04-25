@@ -2,6 +2,8 @@ package org.akka.essentials.wc.mapreduce.example.client;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.akka.essentials.wc.mapreduce.example.common.*;
 
@@ -37,7 +39,9 @@ public class PcapReadActor extends UntypedActor {
 				RandomAccessFile f = new RandomAccessFile(Thread
 						.currentThread().getContextClassLoader()
 						.getResource(fileName).getPath(), "r");
-				int bytes_skip = 8;
+				int bytes_skip = 0;
+				int counter = 0;
+				List<byte[]> packets = new ArrayList<byte[]>();
 				while (bytes_skip < (int) f.length()) {
 					f.seek(bytes_skip);
 					byte[] captured_size = new byte[4];
@@ -85,23 +89,30 @@ public class PcapReadActor extends UntypedActor {
 							f.seek(bytes_skip + 8); //-8
 							packet = new byte[untruncated]; //+16
 							f.read(packet);
-							
+							//packets.add(packet);
+							counter ++;
+							bytes_skip += (untruncated + 16);
 							//logger.info("data " + Hex.encodeHexString( packet ) );
+							//if(packets.size() == 100 || bytes_skip >= (int) f.length() ){
 							getSender().tell(packet, getSelf());
 							numberOfTasks++;
-							bytes_skip += (untruncated + 15);
+							//packets.clear();
+							//}
+
 
 						}
 						else{
+							logger.error("Wrong EtherType " + Hex.encodeHexString(type) + " after packet " + counter);
 						bytes_skip += 1;
 						}
 
 					} else {
 						bytes_skip += 1;
+						logger.error("Seeking" + counter);
 					}
 				}
 				f.close();
-				logger.info("All packets send !");
+				logger.info(counter + " packets send !");
 				// byte[] b = new byte[(int)f.length()];
 				// f.read(b);
 				// f.close();

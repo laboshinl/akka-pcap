@@ -53,6 +53,7 @@ public class ClientActor extends UntypedActor {
 
 			} else {
 				//logger.info("data buffering");
+				//dataBuffer.addAll((List<byte[]>) message);
 				dataBuffer.add((byte[]) message);
 			}
 		} else
