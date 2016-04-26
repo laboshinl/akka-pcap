@@ -41,7 +41,7 @@ public class PcapReadActor extends UntypedActor {
 						.getResource(fileName).getPath(), "r");
 				int bytes_skip = 0;
 				int counter = 0;
-				List<byte[]> packets = new ArrayList<byte[]>();
+				//List<byte[]> packets = new ArrayList<byte[]>();
 				while (bytes_skip < (int) f.length()) {
 					f.seek(bytes_skip);
 					byte[] captured_size = new byte[4];
@@ -49,9 +49,11 @@ public class PcapReadActor extends UntypedActor {
 					f.seek(bytes_skip + 4);
 					byte[] untruncated_size = new byte[4];
 					f.read(untruncated_size);
+
 					int captured = byteArrayToLeInt(captured_size);
 					int untruncated = byteArrayToLeInt(untruncated_size);
 					if (captured == untruncated && untruncated < 65536 && untruncated > 41) {
+						//logger.info("one {} two {} skip {}", Hex.encodeHexString(untruncated_size),  Hex.encodeHexString(captured_size), bytes_skip);
 						f.seek(bytes_skip + 20);
 						byte[] type = new byte[2];
 						f.read(type);
@@ -102,39 +104,23 @@ public class PcapReadActor extends UntypedActor {
 
 						}
 						else{
-							logger.error("Wrong EtherType " + Hex.encodeHexString(type) + " after packet " + counter);
+							logger.error("Wrong EtherType " + Hex.encodeHexString(type) + " after packet " + counter + " at " + bytes_skip);
 						bytes_skip += 1;
 						}
 
 					} else {
 						bytes_skip += 1;
-						logger.error("Seeking" + counter);
+						logger.error("Seeking {}", counter);
 					}
 				}
 				f.close();
-				logger.info(counter + " packets send !");
-				// byte[] b = new byte[(int)f.length()];
-				// f.read(b);
-				// f.close();
-
-//				BufferedReader reader = new BufferedReader(
-//						new InputStreamReader(Thread.currentThread()
-//								.getContextClassLoader().getResource(fileName)
-//								.openStream()));
-//				String line = null;
-//				numberOfTasks = 0;
-//				while ((line = reader.readLine()) != null) {
-//					getSender().tell(line, getSelf());
-//					numberOfTasks++;
-//				}
-//				logger.info("All lines send !");
+				logger.info("{} packets send !", counter);
 
 				getSender().tell(new TaskInfo(numberOfTasks), getSelf());
 			} catch (IOException x) {
 				logger.error("IOException: %s%n", x);
 			}
 		} else
-			throw new IllegalArgumentException("Unknown message [" + message
-					+ "]");
+			throw new IllegalArgumentException("Unknown message [" + message + "]");
 	}
 }

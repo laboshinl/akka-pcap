@@ -12,11 +12,12 @@ import akka.actor.*;
 import akka.event.*;
 
 public class AggregateActor extends UntypedActor {
-	final LoggingAdapter logger = Logging.getLogger(getContext().system(), this);
+	final LoggingAdapter logger = Logging
+			.getLogger(getContext().system(), this);
 
 	private int completedTasksCount = 0;
 	private TaskInfo taskInfo = null;
-	private SortedMap<String, List<Byte>> finalReducedMap = new TreeMap<String, List<Byte>>();
+	private SortedMap<String, Map<Integer, List<Byte>>> finalReducedMap = new TreeMap<String, Map<Integer, List<Byte>>>();
 
 	/**
 	 * {@inheritDoc}
@@ -26,10 +27,9 @@ public class AggregateActor extends UntypedActor {
 		if (message instanceof Map) {
 			completedTasksCount++;
 			@SuppressWarnings("unchecked")
-			Map<String, List<Byte>> reducedList = (Map<String, List<Byte>>) message;
+			Map<String, Map<Integer, List<Byte>>> reducedList = (Map<String, Map<Integer, List<Byte>>>) message;
 			aggregateInMemoryReduce(reducedList);
-		}
-		else if (message instanceof TaskInfo) {
+		} else if (message instanceof TaskInfo) {
 			taskInfo = (TaskInfo) message;
 		}
 
@@ -37,50 +37,53 @@ public class AggregateActor extends UntypedActor {
 		logger.info("completedTasksCount=" + completedTasksCount);
 		if (taskInfo != null)
 			logger.info("taskInfo#numberOfTasks=" + taskInfo.getNumberOfTasks());
-		if (taskInfo != null && completedTasksCount >= taskInfo.getNumberOfTasks()) {
+		if (taskInfo != null
+				&& completedTasksCount >= taskInfo.getNumberOfTasks()) {
 			PrintStream out = null;
+//			Collections.sort(finalReducedMap, new Comparator<CustomData>() {
+//                @Override
+//                public int compare(CustomData lhs, CustomData rhs) {
+//                    return lhs.customInt > rhs.customInt ? -1 : (lhs.customInt > rhs.customInt ) ? 1 : 0;
+//                }
+//            });
 			Iterator entries = finalReducedMap.entrySet().iterator();
+			
 			while (entries.hasNext()) {
-			  Entry thisEntry = (Entry) entries.next();
-			  //Object key = thisEntry.getKey();
-			  //FileUtils.writeByteArrayToFile(new File("pathname"), myByteArray)
-//				try {
-              out = new PrintStream(new FileOutputStream((String) thisEntry.getKey()+".raw"));
-              out.write(Bytes.toArray((List<Byte>) thisEntry.getValue()));
-//			  //out.print(thisEntry.getValue());
-//				}
-//			  //Object value = thisEntry.getValue();
-//			  // ...
-//				finally {
-//					if (out != null)
-//						out.close();
-//				}
+				Entry thisEntry = (Entry) entries.next();
+				//Iterator entries2 = (Map<Integer, List<Byte>>)thisEntry.entrySet().iterator();
+				try {
+					out = new PrintStream(new FileOutputStream(
+							(String) thisEntry.getKey() + ".raw"));
+					Map<Integer, List<Byte>> treeMap = new TreeMap<Integer, List<Byte>>((Map<Integer, List<Byte>>)thisEntry.getValue());
+					for (Integer key : treeMap.keySet()) {
+					out.write(Bytes.toArray((List<Byte>) treeMap.get(key)));
+				}
+//					for (Integer key : ((Map<Integer, List<Byte>>) thisEntry.getValue()).keySet()) {
+//						out.write(Bytes.toArray((List<Byte>) ((Map<Integer, List<Byte>>)thisEntry.getValue()).get(key)));
+//					}
+
+				} finally {
+					if (out != null)
+						out.close();
+				}
 			}
-//			try {
-//				out = new PrintStream(new FileOutputStream("finaloutput.log"));
-//				out.print(finalReducedMap.lastKey());
-//			}
-//			finally {
-//				if (out != null)
-//					out.close();
-//			}
 
 			logger.error("*** now is really done!");
 		}
 	}
 
-	private void aggregateInMemoryReduce(Map<String, List<Byte>> reducedList) {
+	private void aggregateInMemoryReduce(Map<String, Map<Integer, List<Byte>>> reducedList) {
 		Iterator<String> iter = reducedList.keySet().iterator();
 		while (iter.hasNext()) {
 			String key = iter.next();
 			if (finalReducedMap.containsKey(key)) {
-				List<Byte> newList = new ArrayList<Byte>();
-				newList.addAll(reducedList.get(key));
-				newList.addAll(finalReducedMap.get(key));
-				finalReducedMap.put(key, newList);
-			}
-			else {
-				finalReducedMap.put(key, reducedList.get(key));
+				finalReducedMap.get(key).putAll(reducedList.get(key));
+//				List<Byte> newList = new ArrayList<Byte>();
+//				newList.addAll(reducedList.get(key));
+//				newList.addAll(finalReducedMap.get(key));
+//				finalReducedMap.put(key, newList);
+			} else {
+				finalReducedMap.putAll(reducedList);
 			}
 
 		}

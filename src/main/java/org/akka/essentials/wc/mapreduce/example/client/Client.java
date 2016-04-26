@@ -7,7 +7,7 @@ import com.typesafe.config.*;
 
 public class Client implements Bootable {
 	public Client() {
-		final String fileName = "pdf.pcap";
+		final String fileName = "jpeg.pcap";
 
 		ActorSystem system = ActorSystem.create("ClientApplication",
 				ConfigFactory.load().getConfig("MapReduceClientApp"));

@@ -7,6 +7,7 @@ public class Result implements Serializable{
 	private String word;
 	private int no_of_instances;
 	private byte[] data;
+	private long sequence;
 
 	public Result(String word, int no_of_instances){
 		this.setWord(word);
@@ -19,6 +20,14 @@ public class Result implements Serializable{
 
 	public String getWord() {
 		return word;
+	}
+	
+	public void setSequence(long sequence){
+		this.sequence = sequence;
+	}
+	
+	public long getSequence(){
+		return sequence;
 	}
 	
 	public void setData(byte[] data) {
