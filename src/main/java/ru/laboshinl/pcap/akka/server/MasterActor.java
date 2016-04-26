@@ -1,7 +1,6 @@
-package org.akka.essentials.wc.mapreduce.example.server;
+package ru.laboshinl.pcap.akka.server;
 
-import org.akka.essentials.wc.mapreduce.example.common.*;
-
+import ru.laboshinl.pcap.akka.common.*;
 import akka.actor.*;
 import akka.event.*;
 

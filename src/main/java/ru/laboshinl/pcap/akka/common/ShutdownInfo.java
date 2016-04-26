@@ -1,4 +1,4 @@
-package org.akka.essentials.wc.mapreduce.example.common;
+package ru.laboshinl.pcap.akka.common;
 
 import java.io.*;
 

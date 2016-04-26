@@ -1,4 +1,4 @@
-package org.akka.essentials.wc.mapreduce.example.server;
+package ru.laboshinl.pcap.akka.server;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -7,9 +7,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.akka.essentials.wc.mapreduce.example.client.PcapReadActor;
 import org.apache.commons.codec.binary.Hex;
 
+import ru.laboshinl.pcap.akka.client.PcapReadActor;
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import akka.event.*;

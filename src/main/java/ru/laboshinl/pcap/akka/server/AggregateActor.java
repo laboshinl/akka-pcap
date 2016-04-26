@@ -1,10 +1,10 @@
-package org.akka.essentials.wc.mapreduce.example.server;
+package ru.laboshinl.pcap.akka.server;
 
 import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
 
-import org.akka.essentials.wc.mapreduce.example.common.*;
+import ru.laboshinl.pcap.akka.common.*;
 
 import com.google.common.primitives.Bytes;
 

@@ -1,4 +1,4 @@
-package org.akka.essentials.wc.mapreduce.example.client;
+package ru.laboshinl.pcap.akka.client;
 
 import akka.actor.*;
 import akka.kernel.*;

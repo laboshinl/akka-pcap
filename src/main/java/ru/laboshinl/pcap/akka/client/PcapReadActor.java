@@ -1,17 +1,17 @@
-package org.akka.essentials.wc.mapreduce.example.client;
+package ru.laboshinl.pcap.akka.client;
 
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.akka.essentials.wc.mapreduce.example.common.*;
-
 import akka.actor.*;
 import akka.event.*;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.math.*;
+
+import ru.laboshinl.pcap.akka.common.*;
 
 public class PcapReadActor extends UntypedActor {
 	final LoggingAdapter logger = Logging
