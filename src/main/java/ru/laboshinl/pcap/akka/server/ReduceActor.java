@@ -34,24 +34,6 @@ public class ReduceActor extends UntypedActor {
 			throw new IllegalArgumentException("Unknown message [" + message + "]");
 	}
 
-//	private NavigableMap<String, Integer> reduce2(List<Result> list) {
-//		NavigableMap<String, Integer> reducedMap = new ConcurrentSkipListMap<String, Integer>();
-//
-//		Iterator<Result> iter = list.iterator();
-//		while (iter.hasNext()) {
-//			Result result = iter.next();
-//			if (reducedMap.containsKey(result.getWord())) {
-//				Integer value = (Integer) reducedMap.get(result.getWord());
-//				value++;
-//				reducedMap.put(result.getWord(), value);
-//			}
-//			else {
-//				reducedMap.put(result.getWord(), Integer.valueOf(1));
-//			}
-//		}
-//		return reducedMap;
-//	}
-	
 	private NavigableMap<String,  Map<Integer, List<Byte>> > reduce(List<Result> list) {
 		NavigableMap<String, Map<Integer, List<Byte>>> reducedMap = new ConcurrentSkipListMap<String, Map<Integer, List<Byte>>>();
 

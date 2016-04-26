@@ -40,27 +40,18 @@ public class AggregateActor extends UntypedActor {
 		if (taskInfo != null
 				&& completedTasksCount >= taskInfo.getNumberOfTasks()) {
 			PrintStream out = null;
-//			Collections.sort(finalReducedMap, new Comparator<CustomData>() {
-//                @Override
-//                public int compare(CustomData lhs, CustomData rhs) {
-//                    return lhs.customInt > rhs.customInt ? -1 : (lhs.customInt > rhs.customInt ) ? 1 : 0;
-//                }
-//            });
+
 			Iterator entries = finalReducedMap.entrySet().iterator();
-			
 			while (entries.hasNext()) {
 				Entry thisEntry = (Entry) entries.next();
-				//Iterator entries2 = (Map<Integer, List<Byte>>)thisEntry.entrySet().iterator();
 				try {
 					out = new PrintStream(new FileOutputStream(
 							(String) thisEntry.getKey() + ".raw"));
-					Map<Integer, List<Byte>> treeMap = new TreeMap<Integer, List<Byte>>((Map<Integer, List<Byte>>)thisEntry.getValue());
+					Map<Integer, List<Byte>> treeMap = new TreeMap<Integer, List<Byte>>(
+							(Map<Integer, List<Byte>>) thisEntry.getValue());
 					for (Integer key : treeMap.keySet()) {
-					out.write(Bytes.toArray((List<Byte>) treeMap.get(key)));
-				}
-//					for (Integer key : ((Map<Integer, List<Byte>>) thisEntry.getValue()).keySet()) {
-//						out.write(Bytes.toArray((List<Byte>) ((Map<Integer, List<Byte>>)thisEntry.getValue()).get(key)));
-//					}
+						out.write(Bytes.toArray((List<Byte>) treeMap.get(key)));
+					}
 
 				} finally {
 					if (out != null)
@@ -72,16 +63,13 @@ public class AggregateActor extends UntypedActor {
 		}
 	}
 
-	private void aggregateInMemoryReduce(Map<String, Map<Integer, List<Byte>>> reducedList) {
+	private void aggregateInMemoryReduce(
+			Map<String, Map<Integer, List<Byte>>> reducedList) {
 		Iterator<String> iter = reducedList.keySet().iterator();
 		while (iter.hasNext()) {
 			String key = iter.next();
 			if (finalReducedMap.containsKey(key)) {
 				finalReducedMap.get(key).putAll(reducedList.get(key));
-//				List<Byte> newList = new ArrayList<Byte>();
-//				newList.addAll(reducedList.get(key));
-//				newList.addAll(finalReducedMap.get(key));
-//				finalReducedMap.put(key, newList);
 			} else {
 				finalReducedMap.putAll(reducedList);
 			}

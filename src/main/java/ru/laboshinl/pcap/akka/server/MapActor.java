@@ -117,7 +117,7 @@ public class MapActor extends UntypedActor {
 //							.toString(tcpSrcPort(packet))).hashCode()), 1);
 
 			Result result = new Result(ipSrc(packet)+ ":" + tcpSrcPort(packet) + "->" + ipDst(packet) + ":" + tcpDstPort(packet), 1);
-			result.setData(Arrays.copyOfRange(packet, 66, packet.length));
+			result.setData(Arrays.copyOfRange(packet, 54, packet.length));
 			result.setSequence(seqNumber(packet));
 			//logger.info("Sequence =" + seqNumber(packet));
 			list.add(result);
