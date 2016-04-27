@@ -88,10 +88,10 @@ public class MapActor extends UntypedActor {
 		//int ipHeaderLen = (packet[14] & 0xFF);
 		int totalLen = (packet[16] & 0xFF) << (Byte.SIZE * 1);
 		totalLen |= (packet[17] & 0xFF);
-		//int tcpHeaderLen = (packet[46] & 0xFF);
-		//		logger.info("Flags7" + ((packet[47] >> 7) & 1));
-        logger.info("Total =" + (totalLen -52));
-        return totalLen - 52;
+		int tcpHeaderLen = (packet[46] & 0xFF)/ 4 ;
+		logger.info("TcpHeader {}", tcpHeaderLen);
+        logger.info("Total =" + (totalLen - 20 - tcpHeaderLen));
+        return totalLen - 20 - tcpHeaderLen;
 		//return (totalLen - tcpHeaderLen - ipHeaderLen)/8;
 	}
 
@@ -109,19 +109,12 @@ public class MapActor extends UntypedActor {
 
 	private List<Result> evaluateExpression(byte[] packet) {
 		List<Result> list = new ArrayList<Result>();
-		//tcpPush(packet);
-		if (ipProto(packet) == 6  && tcpDataSize(packet) > 20 /* &&  tcpPush(packet) == 1 */)  {
-//			Result result = new Result(Long.toString((long) (ipDst(packet)
-//					+ ":" + Integer.toString(tcpDstPort(packet))).hashCode()
-//					+ (long) (ipSrc(packet) + ":" + Integer
-//							.toString(tcpSrcPort(packet))).hashCode()), 1);
-
+        int dataSize = tcpDataSize(packet);
+		if (ipProto(packet) == 6  && dataSize > 20 )  {
 			Result result = new Result(ipSrc(packet)+ ":" + tcpSrcPort(packet) + "->" + ipDst(packet) + ":" + tcpDstPort(packet), 1);
-			result.setData(Arrays.copyOfRange(packet, 54, packet.length));
+			result.setData(Arrays.copyOfRange(packet, packet.length-dataSize, packet.length));
 			result.setSequence(seqNumber(packet));
-			//logger.info("Sequence =" + seqNumber(packet));
 			list.add(result);
-			//logger.info("Flags " + tcpPush(packet));
 		}
 
 		return list;
@@ -136,15 +129,6 @@ public class MapActor extends UntypedActor {
 		    return value;
 	}
 	
-	private boolean isAlpha(String s) {
-		s = s.toUpperCase();
-		for (int i = 0; i < s.length(); i++) {
-			int c = (int) s.charAt(i);
-			if (c < 65 || c > 90)
-				return false;
-		}
-		return true;
-	}
 
 	// message handler
 	public void onReceive(Object message) {

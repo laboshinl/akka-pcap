@@ -1,5 +1,7 @@
 package ru.laboshinl.pcap.akka.client;
 
+import javax.swing.JFileChooser;
+
 import akka.actor.*;
 import akka.kernel.*;
 
@@ -7,18 +9,31 @@ import com.typesafe.config.*;
 
 public class Client implements Bootable {
 	public Client() {
-		final String fileName = "smallFlows.pcap";
+		
+		//String[] fileNames = {"split.001","split.002","split.003","split.004", "split.005"};
+		
+//		JFileChooser fileopen = new JFileChooser("/home/laboshinl/workspace/akka-mapreduce-example/src/main/resources");
+//		int ret = fileopen.showDialog(null, "Открыть файл");                
+//		if (ret == JFileChooser.APPROVE_OPTION) {
+//		    fileName = fileopen.getSelectedFile().getName();
+//		}
+
+
 
 		ActorSystem system = ActorSystem.create("ClientApplication",
 				ConfigFactory.load().getConfig("MapReduceClientApp"));
 
-		final ActorRef fileReadActor = system.actorOf(Props.create(
-				PcapReadActor.class));
 
 		String remotePath = "akka.tcp://MapReduceApp@127.0.0.1:2552/user/masterActor";
 		ActorRef clientActor = system.actorOf(Props.create(ClientActor.class, remotePath));
 
-		fileReadActor.tell(fileName, clientActor);
+//		for (int i = 10; i < 35; i++){
+		//final ActorRef fileReadActor = system.actorOf(Props.create(
+		//		PcapReadActor.class));
+			system.actorOf(Props.create(
+//					PcapReadActor.class)).tell("split.0"+ i, clientActor);
+			PcapReadActor.class)).tell("/bigFlows.pcap", clientActor);
+		//}
 	}
 
 	/**

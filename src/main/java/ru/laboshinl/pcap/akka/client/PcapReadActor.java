@@ -7,6 +7,9 @@ import java.util.List;
 
 import akka.actor.*;
 import akka.event.*;
+import alluxio.AlluxioURI;
+import alluxio.client.file.FileInStream;
+import alluxio.client.file.FileSystem;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.math.*;
@@ -36,13 +39,25 @@ public class PcapReadActor extends UntypedActor {
 				byte[] packet = null;
 				int numberOfTasks = 0;
 
-				RandomAccessFile f = new RandomAccessFile(Thread
-						.currentThread().getContextClassLoader()
-						.getResource(fileName).getPath(), "r");
+//				RandomAccessFile f = new RandomAccessFile(Thread
+//						.currentThread().getContextClassLoader()
+//						.getResource(fileName).getPath(), "r");
+				FileSystem fs = FileSystem.Factory.get();
+				AlluxioURI path = new AlluxioURI(fileName);
+				// Open the file for reading and obtains a lock preventing deletion
+				FileInStream f = fs.openFile(path);
+				// Read data
+//				byte [] data = new byte[1024];
+//				in.read(data);
+//				System.out.println(data);
+//				// Close file relinquishing the lock
+//				in.close();
 				int bytes_skip = 0;
 				int counter = 0;
+				int prev_counter = -1;
+				int failedPackets = 0;
 				//List<byte[]> packets = new ArrayList<byte[]>();
-				while (bytes_skip < (int) f.length()) {
+				while (f.remaining()>0/*bytes_skip < (int) f.remaining()*/) {
 					f.seek(bytes_skip);
 					byte[] captured_size = new byte[4];
 					f.read(captured_size);
@@ -104,17 +119,21 @@ public class PcapReadActor extends UntypedActor {
 
 						}
 						else{
-							logger.error("Wrong EtherType " + Hex.encodeHexString(type) + " after packet " + counter + " at " + bytes_skip);
-						bytes_skip += 1;
+							logger.info("Wrong EtherType " + Hex.encodeHexString(type) + " after packet " + counter + " at " + bytes_skip);
+						    bytes_skip += 1;
 						}
 
 					} else {
 						bytes_skip += 1;
-						logger.error("Seeking {}", counter);
+						if(counter != prev_counter){
+						logger.error("Seeking after {} at {} ", counter, failedPackets);
+						prev_counter = counter;
+						failedPackets ++;
+						}
 					}
 				}
 				f.close();
-				logger.info("{} packets send !", counter);
+				logger.error("{} packets send !", counter);
 
 				getSender().tell(new TaskInfo(numberOfTasks), getSelf());
 			} catch (IOException x) {
