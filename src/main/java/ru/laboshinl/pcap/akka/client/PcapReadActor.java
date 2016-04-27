@@ -27,6 +27,12 @@ public class PcapReadActor extends UntypedActor {
 		value |= (encodedValue[0] & 0xFF);
 		return value;
 	}
+	
+	public static int byteArrayToLeShort(byte[] encodedValue) {
+		int value = ((encodedValue[0]& 0xFF) << (Byte.SIZE * 1));
+		value |= (encodedValue[1] & 0xFF);
+		return value;
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -73,7 +79,7 @@ public class PcapReadActor extends UntypedActor {
 						byte[] type = new byte[2];
 						f.read(type);
 						//logger.info("0x800 " + Integer.parseInt("800", 16));// Hex.encodeHexString(type));
-						Short ethertype = ByteBuffer.wrap(type).getShort();
+						int ethertype = byteArrayToLeShort(type);
 						if (new IntRange(Integer.parseInt("0", 16), Integer.parseInt("5dc", 16)).containsInteger(ethertype) ||
 								new IntRange(Integer.parseInt("600", 16), Integer.parseInt("661", 16)).containsInteger(ethertype) ||
 								new IntRange(Integer.parseInt("800", 16), Integer.parseInt("808", 16)).containsInteger(ethertype) ||
@@ -119,14 +125,14 @@ public class PcapReadActor extends UntypedActor {
 
 						}
 						else{
-							logger.info("Wrong EtherType " + Hex.encodeHexString(type) + " after packet " + counter + " at " + bytes_skip);
+							logger.error("Wrong EtherType " + Hex.encodeHexString(type) + " after packet " + counter + " at {} {} {}" , bytes_skip, Integer.parseInt("86dd", 16), byteArrayToLeShort(type)  ) ;
 						    bytes_skip += 1;
 						}
 
 					} else {
 						bytes_skip += 1;
 						if(counter != prev_counter){
-						logger.error("Seeking after {} at {} ", counter, failedPackets);
+						logger.error("Seeking after {}. {} Packets Failed", counter, failedPackets);
 						prev_counter = counter;
 						failedPackets ++;
 						}
