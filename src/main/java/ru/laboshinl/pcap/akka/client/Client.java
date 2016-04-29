@@ -27,13 +27,20 @@ public class Client implements Bootable {
 		String remotePath = "akka.tcp://MapReduceApp@127.0.0.1:2552/user/masterActor";
 		ActorRef clientActor = system.actorOf(Props.create(ClientActor.class, remotePath));
 
-//		for (int i = 10; i < 35; i++){
+		for (int i = 0; i < 10; i++){
 		//final ActorRef fileReadActor = system.actorOf(Props.create(
 		//		PcapReadActor.class));
 			system.actorOf(Props.create(
-//					PcapReadActor.class)).tell("split.0"+ i, clientActor);
-			PcapReadActor.class)).tell("/bigFlows.pcap", clientActor);
-		//}
+					PcapReadActor.class)).tell("split.00"+ i, clientActor);
+//			PcapReadActor.class)).tell("/bigFlows.pcap", clientActor);
+		}
+		for (int i = 10; i < 36; i++){
+		//final ActorRef fileReadActor = system.actorOf(Props.create(
+		//		PcapReadActor.class));
+			system.actorOf(Props.create(
+					PcapReadActor.class)).tell("split.0"+ i, clientActor);
+//			PcapReadActor.class)).tell("/bigFlows.pcap", clientActor);
+		}
 	}
 
 	/**

@@ -93,5 +93,10 @@
       <artifactId>alluxio-keyvalue-client</artifactId>
       <version>1.0.1</version>
     </dependency>
+    <dependency>
+        <groupId>org.bitbucket.dollar</groupId>
+        <artifactId>dollar</artifactId>
+        <version>1.0-beta3</version>
+</dependency>
 	</dependencies>
 </project>

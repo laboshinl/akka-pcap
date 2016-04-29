@@ -53,18 +53,18 @@ public class AggregateActor extends UntypedActor {
 			logger.info("taskInfo#numberOfTasks=" + taskInfo.getNumberOfTasks());
 		if (taskInfo != null
 				&& completedTasksCount >= taskInfo.getNumberOfTasks()) {
-//			PrintStream out = null;
-			FileOutStream out = null;
+			PrintStream out = null;
+//			FileOutStream out = null;
 
 			Iterator entries = finalReducedMap.entrySet().iterator();
 			while (entries.hasNext()) {
 				Entry thisEntry = (Entry) entries.next();
 				try {	
-					AlluxioURI path = new AlluxioURI("/"+(String) thisEntry.getKey() + ".raw");
-					FileSystem fs = FileSystem.Factory.get();				
-					out = fs.createFile(path);
-//					out = new PrintStream(new FileOutputStream(
-//							(String) thisEntry.getKey() + ".raw"));
+//					AlluxioURI path = new AlluxioURI("/"+(String) thisEntry.getKey() + ".raw");
+//					FileSystem fs = FileSystem.Factory.get();				
+//					out = fs.createFile(path);
+					out = new PrintStream(new FileOutputStream(
+							(String) thisEntry.getKey() + ".raw"));
 					Map<Integer, List<Byte>> treeMap = new TreeMap<Integer, List<Byte>>(
 							(Map<Integer, List<Byte>>) thisEntry.getValue());
 					for (Integer key : treeMap.keySet()) {					
